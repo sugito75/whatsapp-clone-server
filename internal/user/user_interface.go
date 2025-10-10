@@ -1,13 +1,15 @@
 package user
 
-type UserRepository interface {
-	CreateUser()
+import "github.com/gofiber/fiber/v2"
+
+type UserHandler interface {
+	CreateUser(ctx *fiber.Ctx) error
 }
 
 type UserService interface {
-	CreateUser()
+	CreateUser(u CreateUserDTO) (uint, error)
 }
 
-type UserHandler interface {
-	CreateUser()
+type UserRepository interface {
+	CreateUser(u User) (uint, error)
 }
