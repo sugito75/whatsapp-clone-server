@@ -112,7 +112,7 @@ func TestHandleGetUserCredentials(t *testing.T) {
 
 		resp, _ := app.Test(req)
 
-		assert.Equal(t, 201, resp.StatusCode)
+		assert.Equal(t, 200, resp.StatusCode)
 		mockService.AssertExpectations(t)
 	})
 

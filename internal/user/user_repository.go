@@ -21,6 +21,7 @@ func (r *userRepository) CreateUser(u User) (uint, error) {
 
 	if result.Error != nil {
 		slog.Error(result.Error.Error())
+
 		return 0, result.Error
 	}
 

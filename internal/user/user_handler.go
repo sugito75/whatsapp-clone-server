@@ -36,7 +36,7 @@ func (h *userHandler) CreateUser(ctx *fiber.Ctx) error {
 
 	uid, err := h.service.CreateUser(body)
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		return err
 	}
 
 	ctx.Locals("duration", time.Since(start).Milliseconds())
@@ -62,7 +62,7 @@ func (h *userHandler) GetUserCredentials(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	ctx.Status(201).JSON(fiber.Map{
+	ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "successfully get user's credentials!",
 		"data":    cred,
 	})

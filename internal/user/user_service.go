@@ -19,6 +19,9 @@ func NewService(repo UserRepository, sessionService session.SessionService) User
 }
 
 func (s *userService) CreateUser(u CreateUserDTO) (uint, error) {
+	if user := s.repo.GetUserByPhone(u.Phone); user != nil {
+		return 0, fiber.NewError(fiber.StatusBadRequest, "number already in use!")
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 	if err != nil {

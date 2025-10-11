@@ -26,6 +26,7 @@ func TestServiceCreateUser(t *testing.T) {
 			ProfilePicture: nil,
 		}
 
+		repo.On("GetUserByPhone", dto.Phone).Return(nil)
 		repo.On("CreateUser", mock.Anything).Return(uint(1), nil)
 		sessionSvc.On("SaveSession", uint(1)).Return(nil)
 
@@ -40,6 +41,24 @@ func TestServiceCreateUser(t *testing.T) {
 		sessionSvc.AssertExpectations(t)
 	})
 
+	t.Run("should fail when phone already used", func(t *testing.T) {
+
+		repo := new(mocks.MockUserRepository)
+		sessionSvc := new(mocks.MockSessionService)
+
+		dto := user.CreateUserDTO{Username: "John", Password: "secret123", Phone: "081212121", ProfilePicture: &multipart.FileHeader{}}
+
+		repo.On("GetUserByPhone", dto.Phone).Return(&user.User{})
+
+		svc := user.NewService(repo, sessionSvc)
+
+		uid, err := svc.CreateUser(dto)
+
+		assert.Error(t, err)
+		assert.Equal(t, uint(0), uid)
+		repo.AssertExpectations(t)
+	})
+
 	t.Run("should fail when something wrong in repo", func(t *testing.T) {
 
 		repo := new(mocks.MockUserRepository)
@@ -47,6 +66,7 @@ func TestServiceCreateUser(t *testing.T) {
 
 		dto := user.CreateUserDTO{Username: "John", Password: "secret123", ProfilePicture: &multipart.FileHeader{}}
 
+		repo.On("GetUserByPhone", dto.Phone).Return(nil)
 		repo.On("CreateUser", mock.Anything).Return(uint(0), errors.New("db error"))
 
 		svc := user.NewService(repo, sessionSvc)
@@ -66,6 +86,7 @@ func TestServiceCreateUser(t *testing.T) {
 
 		dto := user.CreateUserDTO{Username: "John", Password: "secret123", ProfilePicture: &multipart.FileHeader{}}
 
+		repo.On("GetUserByPhone", dto.Phone).Return(nil)
 		repo.On("CreateUser", mock.Anything).Return(uint(1), nil)
 		sessionSvc.On("SaveSession", uint(1)).Return(errors.New("session error"))
 
