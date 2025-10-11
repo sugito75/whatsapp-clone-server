@@ -24,11 +24,11 @@ func (h *userHandler) CreateUser(ctx *fiber.Ctx) error {
 	validate := validator.New()
 
 	if err := ctx.BodyParser(&body); err != nil {
-		return fiber.NewError(400, err.Error())
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	if err := validate.Struct(body); err != nil {
-		return fiber.NewError(400, err.Error())
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	file, _ := ctx.FormFile("profilePicture")
@@ -36,7 +36,7 @@ func (h *userHandler) CreateUser(ctx *fiber.Ctx) error {
 
 	uid, err := h.service.CreateUser(body)
 	if err != nil {
-		return fiber.NewError(500, err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
 	ctx.Locals("duration", time.Since(start).Milliseconds())
@@ -46,5 +46,27 @@ func (h *userHandler) CreateUser(ctx *fiber.Ctx) error {
 			"id": uid,
 		},
 	})
+	return ctx.Next()
+}
+
+func (h *userHandler) GetUserCredentials(ctx *fiber.Ctx) error {
+	start := time.Now()
+	var body GetUserCredentialsDTO
+
+	if err := ctx.BodyParser(&body); err != nil {
+		return fiber.NewError(400, err.Error())
+	}
+
+	cred, err := h.service.GetUserCredentials(body)
+	if err != nil {
+		return err
+	}
+
+	ctx.Status(201).JSON(fiber.Map{
+		"message": "successfully get user's credentials!",
+		"data":    cred,
+	})
+
+	ctx.Locals("duration", time.Since(start).Milliseconds())
 	return ctx.Next()
 }

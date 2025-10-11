@@ -7,68 +7,123 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/sugito75/chat-app-server/internal/user"
-	"gorm.io/driver/postgres"
+	"github.com/sugito75/chat-app-server/pkg/mock"
 	"gorm.io/gorm"
 )
 
-func setupMockDB(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
-	db, mock, err := sqlmock.New()
-	assert.NoError(t, err)
+func TestRepoCreateUser(t *testing.T) {
+	t.Run("should success", func(t *testing.T) {
+		gormDB, mock := mock.SetupMockDB(t)
+		repo := user.NewRepository(gormDB)
 
-	dialector := postgres.New(postgres.Config{
-		Conn:                 db,
-		PreferSimpleProtocol: true,
+		newUser := user.User{
+			Username:   "John Doe",
+			Phone:      "90121",
+			LastOnline: time.Now(),
+		}
+
+		// Mock expected behavior
+		mock.ExpectBegin()
+		mock.ExpectQuery(`INSERT INTO "users"`).
+			WithArgs("John Doe", "90121", "", "", "", false, newUser.LastOnline).
+			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+		mock.ExpectCommit()
+
+		id, err := repo.CreateUser(newUser)
+
+		assert.NoError(t, err)
+		assert.Equal(t, uint(1), id)
+		assert.NoError(t, mock.ExpectationsWereMet())
 	})
 
-	gormDB, err := gorm.Open(dialector, &gorm.Config{})
-	assert.NoError(t, err)
+	t.Run("should fail when query is wrong", func(t *testing.T) {
+		gormDB, mock := mock.SetupMockDB(t)
+		repo := user.NewRepository(gormDB)
 
-	return gormDB, mock
+		newUser := user.User{
+			Username:   "John Doe",
+			Phone:      "90121",
+			LastOnline: time.Now(),
+		}
+
+		// Mock failure on insert
+		mock.ExpectBegin()
+		mock.ExpectQuery(`INSERT INTO "users"`).
+			WillReturnError(assert.AnError)
+		mock.ExpectRollback()
+
+		id, err := repo.CreateUser(newUser)
+
+		assert.Error(t, err)
+		assert.Equal(t, uint(0), id)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
 }
 
-func TestCreateUser_Success(t *testing.T) {
-	gormDB, mock := setupMockDB(t)
-	repo := user.NewRepository(gormDB)
+func TestRepoGetUserByPhone(t *testing.T) {
+	t.Run("should success", func(t *testing.T) {
+		gormDB, mock := mock.SetupMockDB(t)
+		repo := user.NewRepository(gormDB)
 
-	newUser := user.User{
-		Username:   "John Doe",
-		Phone:      "90121",
-		LastOnline: time.Now(),
-	}
+		expectedUser := user.User{
+			ID:             1,
+			Username:       "johndoe",
+			Phone:          "08123456789",
+			Password:       "hashedpassword",
+			ProfilePicture: "https://cdn.example.com/john.png",
+			Bio:            "Hello world",
+			IsOnline:       true,
+			LastOnline:     time.Now(),
+		}
 
-	// Mock expected behavior
-	mock.ExpectBegin()
-	mock.ExpectQuery(`INSERT INTO "users"`).
-		WithArgs("John Doe", "90121", "", "", "", false, newUser.LastOnline).
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-	mock.ExpectCommit()
+		rows := sqlmock.NewRows([]string{
+			"id",
+			"username",
+			"phone",
+			"password",
+			"profile_picture",
+			"bio",
+			"is_online",
+			"last_online",
+		}).AddRow(
+			expectedUser.ID,
+			expectedUser.Username,
+			expectedUser.Phone,
+			expectedUser.Password,
+			expectedUser.ProfilePicture,
+			expectedUser.Bio,
+			expectedUser.IsOnline,
+			expectedUser.LastOnline,
+		)
 
-	id, err := repo.CreateUser(newUser)
+		mock.ExpectQuery(`SELECT .* FROM "users" WHERE phone = \$1 ORDER BY "users"\."id" LIMIT \$2`).
+			WithArgs(expectedUser.Phone, 1).
+			WillReturnRows(rows)
 
-	assert.NoError(t, err)
-	assert.Equal(t, uint(1), id)
-	assert.NoError(t, mock.ExpectationsWereMet())
-}
+		u := repo.GetUserByPhone(expectedUser.Phone)
 
-func TestCreateUser_Failure(t *testing.T) {
-	gormDB, mock := setupMockDB(t)
-	repo := user.NewRepository(gormDB)
+		assert.NotNil(t, u)
+		assert.Equal(t, expectedUser.ID, u.ID)
+		assert.Equal(t, expectedUser.Username, u.Username)
+		assert.Equal(t, expectedUser.Phone, u.Phone)
+		assert.Equal(t, expectedUser.Bio, u.Bio)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
 
-	newUser := user.User{
-		Username:   "John Doe",
-		Phone:      "90121",
-		LastOnline: time.Now(),
-	}
+	t.Run("should fail when data is not found", func(t *testing.T) {
 
-	// Mock failure on insert
-	mock.ExpectBegin()
-	mock.ExpectQuery(`INSERT INTO "users"`).
-		WillReturnError(assert.AnError)
-	mock.ExpectRollback()
+		gormDB, mock := mock.SetupMockDB(t)
+		repo := user.NewRepository(gormDB)
 
-	id, err := repo.CreateUser(newUser)
+		mock.ExpectQuery(`SELECT .* FROM "users" WHERE phone = \$1 ORDER BY "users"\."id" LIMIT \$2`).
+			WithArgs("0999999999", 1).
+			WillReturnError(gorm.ErrRecordNotFound)
 
-	assert.Error(t, err)
-	assert.Equal(t, uint(0), id)
-	assert.NoError(t, mock.ExpectationsWereMet())
+		u := repo.GetUserByPhone("0999999999")
+
+		assert.Nil(t, u)
+		assert.NoError(t, mock.ExpectationsWereMet())
+
+	})
 }

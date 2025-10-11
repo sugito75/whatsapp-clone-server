@@ -9,3 +9,17 @@ type CreateUserDTO struct {
 	Bio            string                `form:"bio,omitempty"`
 	ProfilePicture *multipart.FileHeader `form:"profilePicture"`
 }
+
+type GetUserCredentialsDTO struct {
+	Phone    string `json:"phone" validate:"required,number,max=13"`
+	Password string `json:"password" validate:"required"`
+}
+
+type UserCredentialsDTO struct {
+	ID             uint   `json:"id"`
+	Username       string `json:"username"`
+	Phone          string `json:"phone"`
+	ProfilePicture string `json:"profilePicture"`
+	Bio            string `json:"bio"`
+	SessionID      string `json:"sessionId"`
+}
