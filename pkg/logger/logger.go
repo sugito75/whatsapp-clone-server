@@ -2,7 +2,6 @@ package logger
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"log/slog"
 	"os"
@@ -24,11 +23,11 @@ func openLogFile() *os.File {
 }
 
 func InitLogger() {
-	logFile := openLogFile()
+	// logFile := openLogFile()
 
-	multiWriter := io.MultiWriter(os.Stdout, logFile)
+	// multiWriter := io.MultiWriter(os.Stdout, logFile)
 
-	logger := slog.New(slog.NewJSONHandler(multiWriter, nil))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 }
 

@@ -25,7 +25,7 @@ func TestRepoCreateUser(t *testing.T) {
 		// Mock expected behavior
 		mock.ExpectBegin()
 		mock.ExpectQuery(`INSERT INTO "users"`).
-			WithArgs("John Doe", "90121", "", "", "", false, newUser.LastOnline).
+			WithArgs("John Doe", "90121", "", nil, "", false, newUser.LastOnline).
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 		mock.ExpectCommit()
 
@@ -71,7 +71,7 @@ func TestRepoGetUserByPhone(t *testing.T) {
 			Username:       "johndoe",
 			Phone:          "08123456789",
 			Password:       "hashedpassword",
-			ProfilePicture: "https://cdn.example.com/john.png",
+			ProfilePicture: nil,
 			Bio:            "Hello world",
 			IsOnline:       true,
 			LastOnline:     time.Now(),

@@ -7,7 +7,7 @@ type User struct {
 	Username       string
 	Phone          string
 	Password       string
-	ProfilePicture string
+	ProfilePicture *string
 	Bio            string
 	IsOnline       bool
 	LastOnline     time.Time

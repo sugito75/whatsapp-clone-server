@@ -25,12 +25,17 @@ func (s *userService) CreateUser(u CreateUserDTO) (uint, error) {
 		return 0, err
 	}
 
+	pictureUrl := ""
+	if u.ProfilePicture != nil {
+		pictureUrl = u.ProfilePicture.Filename
+	}
+
 	user := User{
 		Username:       u.Username,
 		Password:       string(hashedPassword),
 		Phone:          u.Phone,
 		Bio:            u.Bio,
-		ProfilePicture: u.ProfilePicture.Filename,
+		ProfilePicture: &pictureUrl,
 	}
 
 	uid, err := s.repo.CreateUser(user)

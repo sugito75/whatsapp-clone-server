@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"log/slog"
 	"os"
 
@@ -13,10 +12,7 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
-	}
-
+	godotenv.Load()
 	logger.InitLogger()
 
 	app := fiber.New(config.NewFiberConfig())

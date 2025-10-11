@@ -12,7 +12,9 @@ CREATE TABLE users (
 CREATE TABLE sessions (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-    session_id VARCHAR(250) NOT NULL
+    session_id VARCHAR(250) NOT NULL,
+
+    UNIQUE(user_id, session_id)
 );
 
 CREATE TABLE chats (

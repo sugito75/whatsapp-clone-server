@@ -16,10 +16,10 @@ type GetUserCredentialsDTO struct {
 }
 
 type UserCredentialsDTO struct {
-	ID             uint   `json:"id"`
-	Username       string `json:"username"`
-	Phone          string `json:"phone"`
-	ProfilePicture string `json:"profilePicture"`
-	Bio            string `json:"bio"`
-	SessionID      string `json:"sessionId"`
+	ID             uint    `json:"id"`
+	Username       string  `json:"username"`
+	Phone          string  `json:"phone"`
+	ProfilePicture *string `json:"profilePicture"`
+	Bio            string  `json:"bio"`
+	SessionID      string  `json:"sessionId"`
 }

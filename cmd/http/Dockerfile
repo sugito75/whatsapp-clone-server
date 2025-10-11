@@ -8,16 +8,16 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /http ./cmd/api
+RUN go build -o /http ./cmd/http
 
 
 FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=builder /http .
+COPY --from=builder /http /http
 
-CMD ['./http']
+ENTRYPOINT /http
 
 
 
