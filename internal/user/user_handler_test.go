@@ -129,6 +129,24 @@ func TestHandleGetUserCredentials(t *testing.T) {
 		assert.Equal(t, 400, resp.StatusCode)
 	})
 
+	t.Run("should return 400 when validation error", func(t *testing.T) {
+		mockService := new(mocks.MockUserService)
+		app := setupTestApp(mockService)
+
+		dto := user.GetUserCredentialsDTO{
+			Phone:    "",
+			Password: "qdq",
+		}
+
+		body, _ := json.Marshal(dto)
+
+		req := httptest.NewRequest(http.MethodPost, "/login", bytes.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, _ := app.Test(req)
+		assert.Equal(t, 400, resp.StatusCode)
+	})
+
 	t.Run("should return 400 when credentials dont match", func(t *testing.T) {
 		mockService := new(mocks.MockUserService)
 		mockService.On("GetUserCredentials", mock.AnythingOfType("user.GetUserCredentialsDTO")).

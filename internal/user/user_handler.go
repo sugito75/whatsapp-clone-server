@@ -8,12 +8,14 @@ import (
 )
 
 type userHandler struct {
-	service UserService
+	service  UserService
+	validate *validator.Validate
 }
 
 func NewHandler(service UserService) UserHandler {
 	return &userHandler{
-		service: service,
+		service:  service,
+		validate: validator.New(),
 	}
 }
 
@@ -21,13 +23,11 @@ func (h *userHandler) CreateUser(ctx *fiber.Ctx) error {
 	start := time.Now()
 	var body CreateUserDTO
 
-	validate := validator.New()
-
 	if err := ctx.BodyParser(&body); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
-	if err := validate.Struct(body); err != nil {
+	if err := h.validate.Struct(body); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
@@ -55,6 +55,10 @@ func (h *userHandler) GetUserCredentials(ctx *fiber.Ctx) error {
 
 	if err := ctx.BodyParser(&body); err != nil {
 		return fiber.NewError(400, err.Error())
+	}
+
+	if err := h.validate.Struct(body); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
 	cred, err := h.service.GetUserCredentials(body)
