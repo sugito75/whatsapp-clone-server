@@ -40,7 +40,7 @@ func (h *userHandler) CreateUser(ctx *fiber.Ctx) error {
 	}
 
 	ctx.Locals("duration", time.Since(start).Milliseconds())
-	ctx.Status(201).JSON(fiber.Map{
+	ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "successfully create new user!",
 		"data": fiber.Map{
 			"id": uid,
@@ -68,5 +68,22 @@ func (h *userHandler) GetUserCredentials(ctx *fiber.Ctx) error {
 	})
 
 	ctx.Locals("duration", time.Since(start).Milliseconds())
+	return ctx.Next()
+}
+
+func (h *userHandler) CheckIsNumberRegistered(ctx *fiber.Ctx) error {
+	start := time.Now()
+	phone := ctx.Params("phone")
+
+	isRegistered := h.service.CheckIsNumberRegistered(phone)
+
+	ctx.Locals("duration", time.Since(start).Milliseconds())
+	ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "success",
+		"data": fiber.Map{
+			"isRegistered": isRegistered,
+		},
+	})
+
 	return ctx.Next()
 }

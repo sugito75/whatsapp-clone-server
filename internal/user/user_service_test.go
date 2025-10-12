@@ -199,3 +199,35 @@ func TestGetUserCredentials(t *testing.T) {
 		sessionSvc.AssertExpectations(t)
 	})
 }
+
+func TestServiceCheckIsNumberRegistered(t *testing.T) {
+	t.Run("should return true if number registered", func(t *testing.T) {
+		repo := new(mocks.MockUserRepository)
+		sessionSvc := new(mocks.MockSessionService)
+
+		phone := "13131"
+
+		repo.On("GetUserByPhone", phone).Return(&user.User{})
+
+		svc := user.NewService(repo, sessionSvc)
+
+		result := svc.CheckIsNumberRegistered(phone)
+
+		assert.Equal(t, true, result)
+	})
+
+	t.Run("should return false if number not registered", func(t *testing.T) {
+		repo := new(mocks.MockUserRepository)
+		sessionSvc := new(mocks.MockSessionService)
+
+		phone := "13131"
+
+		repo.On("GetUserByPhone", phone).Return(nil)
+
+		svc := user.NewService(repo, sessionSvc)
+
+		result := svc.CheckIsNumberRegistered(phone)
+
+		assert.Equal(t, false, result)
+	})
+}

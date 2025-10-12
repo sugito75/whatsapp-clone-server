@@ -24,6 +24,8 @@ func setupTestApp(service user.UserService) *fiber.App {
 	app.Post("/users", handler.CreateUser)
 	app.Post("/login", handler.GetUserCredentials)
 
+	app.Get("/check/:phone", handler.CheckIsNumberRegistered)
+
 	app.Use(func(ctx *fiber.Ctx) error {
 		return nil
 	})
@@ -161,5 +163,20 @@ func TestHandleGetUserCredentials(t *testing.T) {
 
 		resp, _ := app.Test(req)
 		assert.Equal(t, fiber.StatusForbidden, resp.StatusCode)
+	})
+}
+
+func TestHandleCheckIsNumberRegistered(t *testing.T) {
+	t.Run("should success", func(t *testing.T) {
+		mockService := new(mocks.MockUserService)
+		app := setupTestApp(mockService)
+
+		mockService.On("CheckIsNumberRegistered", "0813113").Return(true)
+
+		req := httptest.NewRequest(http.MethodGet, "/check/0813113", nil)
+
+		resp, _ := app.Test(req)
+
+		assert.Equal(t, 200, resp.StatusCode)
 	})
 }

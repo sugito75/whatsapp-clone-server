@@ -81,3 +81,9 @@ func (s *userService) GetUserCredentials(u GetUserCredentialsDTO) (*UserCredenti
 
 	return &creds, nil
 }
+
+func (s *userService) CheckIsNumberRegistered(phone string) bool {
+	u := s.repo.GetUserByPhone(phone)
+
+	return u != nil
+}
