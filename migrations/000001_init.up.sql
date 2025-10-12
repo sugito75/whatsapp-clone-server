@@ -20,7 +20,9 @@ CREATE TABLE sessions (
 CREATE TABLE chats (
     id BIGSERIAL PRIMARY KEY,
     chat_type VARCHAR(10) CHECK (chat_type IN ('private', 'group')) NOT NULL,
-    title VARCHAR(250),
+    title VARCHAR(100),
+    description TEXT,
+    icon TEXT,
     created_by BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
