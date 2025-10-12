@@ -1,12 +1,16 @@
 package chat
 
+import "github.com/sugito75/chat-app-server/pkg/mq"
+
 type chatService struct {
 	repo ChatRepository
+	mq   mq.MessageQueue
 }
 
-func NewService(repo ChatRepository) ChatService {
+func NewService(repo ChatRepository, mq mq.MessageQueue) ChatService {
 	return &chatService{
 		repo: repo,
+		mq:   mq,
 	}
 }
 
