@@ -19,7 +19,7 @@ type ChatService interface {
 	CreateGroupChat(c CreateGroupChatDTO) error
 	JoinGroupChat(g JoinGroupDTO) error
 	GetChats(uid uint64) ([]GetChatsDTO, error)
-	SendMessage(m MessageDTO) error
+	SendMessage(m SendMessageDTO) error
 	ReadMessage(id uint) error
 	EditMessage(m EditMessageDTO) error
 	DeleteMessage(id uint) error
@@ -29,6 +29,7 @@ type ChatRepository interface {
 	CreateChat(c Chat) (uint64, error)
 	GetChats(uid uint64) ([]ChatMember, error)
 	AddChatMember(m ChatMember) error
-	EditMessage(m Message) error
+	SaveMessage(m Message) error
+	EditMessage(id uint64, m Message) error
 	DeleteMessage(id uint64) error
 }

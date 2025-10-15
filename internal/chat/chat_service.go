@@ -36,7 +36,7 @@ func (s *chatService) GetChats(uid uint64) ([]GetChatsDTO, error) {
 	return chats, nil
 }
 
-func (s *chatService) SendMessage(m MessageDTO) error {
+func (s *chatService) SendMessage(m SendMessageDTO) error {
 	return nil
 }
 

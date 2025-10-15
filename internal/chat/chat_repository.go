@@ -50,7 +50,11 @@ func (r *chatRepository) AddChatMember(m ChatMember) error {
 	return result.Error
 }
 
-func (r *chatRepository) EditMessage(m Message) error {
+func (r *chatRepository) SaveMessage(m Message) error {
+	return nil
+}
+
+func (r *chatRepository) EditMessage(id uint64, m Message) error {
 	return nil
 }
 

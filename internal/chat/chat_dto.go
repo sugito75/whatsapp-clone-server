@@ -32,10 +32,15 @@ type JoinGroupDTO struct {
 	GroupId uint `json:"groupId" validate:"required"`
 }
 
-type MessageDTO struct {
+type SendMessageDTO struct {
 	Type    ChatType `json:"type" validate:"required"`
 	ChatID  uint     `json:"chatId" validate:"required"`
 	Message string   `json:"message" validate:"required"`
+}
+
+type MessageDTO struct {
+	To      string  `json:"from"`
+	Message Message `json:"message"`
 }
 
 type EditMessageDTO struct {

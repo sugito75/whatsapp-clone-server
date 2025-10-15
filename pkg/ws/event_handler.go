@@ -3,17 +3,15 @@ package ws
 import (
 	"encoding/json"
 
+	"github.com/gorilla/websocket"
 	"github.com/sugito75/chat-app-server/internal/chat"
 )
 
 type MessageHandler struct {
-	service chat.ChatService
 }
 
 func NewMessageHandler(service chat.ChatService) *MessageHandler {
-	return &MessageHandler{
-		service: service,
-	}
+	return &MessageHandler{}
 }
 
 func (h *MessageHandler) HandlePrivateMessage(e Event, c *Client) error {
@@ -26,5 +24,10 @@ func (h *MessageHandler) HandlePrivateMessage(e Event, c *Client) error {
 }
 
 func (h *MessageHandler) HandleGroupMessage(e Event, c *Client) error {
+	socketIds := []string{}
+	for _, id := range socketIds {
+		c.manager.clients[id].conn.WriteMessage(websocket.TextMessage, e.Payload)
+	}
+
 	return nil
 }
