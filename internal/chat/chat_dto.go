@@ -1,5 +1,7 @@
 package chat
 
+import "time"
+
 type CreatePrivateChatDTO struct {
 	Phone string `json:"phone"`
 }
@@ -9,6 +11,21 @@ type CreateGroupChatDTO struct {
 	Members     []string `form:"members" validate:"required,min=1"`
 	Icon        *string  `form:"icon,omitempty"`
 	Description *string  `form:"description,omitempty"`
+}
+
+type GetChatsDTO struct {
+	ID          uint64         `json:"id"`
+	ChatType    ChatType       `json:"type"`
+	Title       *string        `json:"title,omitempty"`
+	Icon        *string        `json:"icon"`
+	LastMessage LastMessageDTO `json:"lastMessage"`
+}
+
+type LastMessageDTO struct {
+	Text     string     `json:"text"`
+	Status   ChatStatus `json:"status"`
+	SentAt   time.Time  `json:"sentAt"`
+	SenderID *uint64    `json:"senderId"`
 }
 
 type JoinGroupDTO struct {

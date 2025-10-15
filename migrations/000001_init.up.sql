@@ -32,7 +32,7 @@ CREATE TABLE chat_members (
     id BIGSERIAL PRIMARY KEY,
     chat_id BIGINT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role VARCHAR(10) DEFAULT 'member' CHECK(role IN ('member, admin')),
+    role VARCHAR(10) DEFAULT 'member' CHECK(role IN ('member', 'admin')),
     joined_at TIMESTAMP DEFAULT NOW(),
     last_read_message_id BIGINT DEFAULT NULL,
 

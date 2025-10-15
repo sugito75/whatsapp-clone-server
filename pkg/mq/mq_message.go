@@ -8,7 +8,7 @@ const (
 )
 
 type Message struct {
-	Type    MessageType
-	ChatID  uint
-	Content string
+	Type    MessageType `json:"type"`
+	ChatID  uint        `json:"chatId"`
+	Content string      `json:"content"`
 }

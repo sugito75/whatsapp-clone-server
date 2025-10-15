@@ -1,6 +1,10 @@
 package chat
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"strconv"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 type chatHandler struct {
 	service ChatService
@@ -25,7 +29,12 @@ func (h *chatHandler) JoinGroupChat(ctx *fiber.Ctx) error {
 }
 
 func (h *chatHandler) GetChats(ctx *fiber.Ctx) error {
-	return nil
+	id := ctx.Params("id")
+	uid, _ := strconv.Atoi(id)
+	chats, _ := h.service.GetChats(uint64(uid))
+
+	ctx.Status(200).JSON(chats)
+	return ctx.Next()
 }
 
 func (h *chatHandler) GetMessages(ctx *fiber.Ctx) error {

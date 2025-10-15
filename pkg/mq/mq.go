@@ -20,18 +20,25 @@ func New(conn *amqp091.Connection) *messageQueue {
 		return nil
 	}
 
+	_, err = channel.QueueDeclare("messages", true, false, false, false, nil)
+	if err != nil {
+		slog.Error(err.Error())
+		conn.Close()
+		return nil
+	}
+
 	return &messageQueue{
 		conn:    conn,
 		channel: channel,
 	}
 }
 
-func (mq *messageQueue) Publish(q string, m Message) error {
+func (mq *messageQueue) Publish(m Message) error {
 	body, _ := json.Marshal(m)
 
 	return mq.channel.Publish(
 		"",
-		"",
+		"messages",
 		false,
 		false,
 		amqp091.Publishing{
