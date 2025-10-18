@@ -2,24 +2,51 @@ package ws
 
 import (
 	"encoding/json"
+	"errors"
+	"log"
+	"log/slog"
 
 	"github.com/gorilla/websocket"
 	"github.com/sugito75/chat-app-server/internal/chat"
 )
 
 type MessageHandler struct {
+	chatRepo chat.ChatRepository
 }
 
-func NewMessageHandler(service chat.ChatService) *MessageHandler {
-	return &MessageHandler{}
+func NewMessageHandler(repo chat.ChatRepository) *MessageHandler {
+	return &MessageHandler{
+		chatRepo: repo,
+	}
 }
 
 func (h *MessageHandler) HandlePrivateMessage(e Event, c *Client) error {
-	var data map[string]string
-	json.Unmarshal(e.Payload, &data)
+	var data chat.MessageDTO
+	if err := json.Unmarshal(e.Payload, &data); err != nil {
+		return err
+	}
 
-	body, _ := json.Marshal(data)
-	c.manager.clients[data["id"]].conn.WriteMessage(1, body)
+	if err := h.chatRepo.SaveMessage(&data.Message); err != nil {
+		log.Printf("%+v", err)
+		return err
+	}
+
+	client, ok := c.manager.clients[data.To]
+	if !ok {
+		return errors.New("client is offline")
+	}
+
+	data.Message.Status.Status = chat.StatusDelivered
+	body, _ := json.Marshal(data.Message)
+
+	if err := client.conn.WriteMessage(websocket.TextMessage, body); err != nil {
+		slog.Error(err.Error())
+	}
+
+	if err := h.chatRepo.SetMessageStatus(data.Message.ID, chat.StatusDelivered); err != nil {
+		return err
+	}
+
 	return nil
 }
 

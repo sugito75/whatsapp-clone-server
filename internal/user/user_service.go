@@ -28,17 +28,12 @@ func (s *userService) CreateUser(u CreateUserDTO) (uint, error) {
 		return 0, err
 	}
 
-	pictureUrl := ""
-	if u.ProfilePicture != nil {
-		pictureUrl = u.ProfilePicture.Filename
-	}
-
 	user := User{
-		Username:       u.Username,
+		DisplayName:    u.DisplayName,
 		Password:       string(hashedPassword),
 		Phone:          u.Phone,
 		Bio:            u.Bio,
-		ProfilePicture: &pictureUrl,
+		ProfilePicture: &u.ProfilePicture,
 	}
 
 	uid, err := s.repo.CreateUser(user)
@@ -72,7 +67,7 @@ func (s *userService) GetUserCredentials(u GetUserCredentialsDTO) (*UserCredenti
 
 	creds := UserCredentialsDTO{
 		ID:             user.ID,
-		Username:       user.Username,
+		Username:       user.DisplayName,
 		ProfilePicture: user.ProfilePicture,
 		Phone:          user.Phone,
 		Bio:            user.Bio,

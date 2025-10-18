@@ -31,6 +31,8 @@ func TestRepoCreateChat(t *testing.T) {
 			UpdatedAt:   now,
 		}
 
+		m := chat.Message{}
+
 		// Expect INSERT query
 		mock.ExpectBegin()
 		mock.ExpectQuery(regexp.QuoteMeta(
@@ -39,7 +41,7 @@ func TestRepoCreateChat(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(10))
 		mock.ExpectCommit()
 
-		id, err := repo.CreateChat(c)
+		id, err := repo.CreateChat(c, m)
 
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(10), id)
@@ -57,6 +59,8 @@ func TestRepoCreateChat(t *testing.T) {
 			CreatedBy: 99,
 		}
 
+		m := chat.Message{}
+
 		// Expect failure on insert
 		mock.ExpectBegin()
 		mock.ExpectQuery(regexp.QuoteMeta(
@@ -65,7 +69,7 @@ func TestRepoCreateChat(t *testing.T) {
 			WillReturnError(assert.AnError)
 		mock.ExpectRollback()
 
-		id, err := repo.CreateChat(c)
+		id, err := repo.CreateChat(c, m)
 
 		assert.Error(t, err)
 		assert.Equal(t, uint64(0), id)

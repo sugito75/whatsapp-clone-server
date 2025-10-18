@@ -1,6 +1,6 @@
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(100) NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
     phone CHAR(13) NOT NULL UNIQUE,
     password VARCHAR(250) NOT NULL,
     profile_picture TEXT,
@@ -23,7 +23,6 @@ CREATE TABLE chats (
     title VARCHAR(100),
     description TEXT,
     icon TEXT,
-    last_read_message_id BIGINT DEFAULT NULL,
     created_by BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
@@ -34,6 +33,7 @@ CREATE TABLE chat_members (
     chat_id BIGINT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     role VARCHAR(10) DEFAULT 'member' CHECK(role IN ('member', 'admin')),
+    last_message_id BIGINT DEFAULT NULL,
     joined_at TIMESTAMP DEFAULT NOW(),
 
     UNIQUE(chat_id, user_id)
@@ -54,11 +54,11 @@ CREATE TABLE messages (
 CREATE TABLE message_statuses (
     id BIGSERIAL PRIMARY KEY,
     message_id BIGINT REFERENCES messages(id) ON DELETE CASCADE,
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+
     status VARCHAR(10) DEFAULT 'sent' CHECK(status IN ('sent', 'delivered', 'readed')),
     updated_at TIMESTAMP DEFAULT NOW(),
 
-    UNIQUE(message_id, user_id)
+    UNIQUE(message_id)
 );
 
 CREATE TABLE statuses (

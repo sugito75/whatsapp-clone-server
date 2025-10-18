@@ -2,7 +2,6 @@ package user_test
 
 import (
 	"errors"
-	"mime/multipart"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -19,11 +18,11 @@ func TestServiceCreateUser(t *testing.T) {
 		sessionSvc := new(mocks.MockSessionService)
 
 		dto := user.CreateUserDTO{
-			Username:       "John",
+			DisplayName:    "John",
 			Password:       "secret123",
 			Phone:          "08123456789",
 			Bio:            "Hi there!",
-			ProfilePicture: nil,
+			ProfilePicture: "nil",
 		}
 
 		repo.On("GetUserByPhone", dto.Phone).Return(nil)
@@ -46,7 +45,7 @@ func TestServiceCreateUser(t *testing.T) {
 		repo := new(mocks.MockUserRepository)
 		sessionSvc := new(mocks.MockSessionService)
 
-		dto := user.CreateUserDTO{Username: "John", Password: "secret123", Phone: "081212121", ProfilePicture: &multipart.FileHeader{}}
+		dto := user.CreateUserDTO{DisplayName: "John", Password: "secret123", Phone: "081212121", ProfilePicture: ""}
 
 		repo.On("GetUserByPhone", dto.Phone).Return(&user.User{})
 
@@ -64,7 +63,7 @@ func TestServiceCreateUser(t *testing.T) {
 		repo := new(mocks.MockUserRepository)
 		sessionSvc := new(mocks.MockSessionService)
 
-		dto := user.CreateUserDTO{Username: "John", Password: "secret123", ProfilePicture: &multipart.FileHeader{}}
+		dto := user.CreateUserDTO{DisplayName: "John", Password: "secret123", ProfilePicture: ""}
 
 		repo.On("GetUserByPhone", dto.Phone).Return(nil)
 		repo.On("CreateUser", mock.Anything).Return(uint(0), errors.New("db error"))
@@ -84,7 +83,7 @@ func TestServiceCreateUser(t *testing.T) {
 		repo := new(mocks.MockUserRepository)
 		sessionSvc := new(mocks.MockSessionService)
 
-		dto := user.CreateUserDTO{Username: "John", Password: "secret123", ProfilePicture: &multipart.FileHeader{}}
+		dto := user.CreateUserDTO{DisplayName: "John", Password: "secret123", ProfilePicture: ""}
 
 		repo.On("GetUserByPhone", dto.Phone).Return(nil)
 		repo.On("CreateUser", mock.Anything).Return(uint(1), nil)
@@ -110,7 +109,7 @@ func TestGetUserCredentials(t *testing.T) {
 		hashed, _ := bcrypt.GenerateFromPassword([]byte("secret123"), 10)
 		mockUser := &user.User{
 			ID:             1,
-			Username:       "John",
+			DisplayName:    "John",
 			Password:       string(hashed),
 			Phone:          "08123456789",
 			Bio:            "Hi there!",

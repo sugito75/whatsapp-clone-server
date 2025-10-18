@@ -43,26 +43,26 @@ type Chat struct {
 }
 
 type ChatMember struct {
-	ID                uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
-	ChatID            uint64    `gorm:"not null;index;uniqueIndex:idx_chat_user" json:"chat_id"`
-	UserID            uint64    `gorm:"not null;index;uniqueIndex:idx_chat_user" json:"user_id"`
-	Role              ChatRole  `gorm:"type:varchar(10);default:'member';check:role IN ('member','admin')" json:"role"`
-	JoinedAt          time.Time `gorm:"autoCreateTime" json:"joined_at"`
-	LastReadMessageID *uint64   `gorm:"default:null" json:"last_read_message_id,omitempty"`
+	ID            uint64    `gorm:"primaryKey;autoIncrement" json:"id"`
+	ChatID        uint64    `gorm:"not null;index;uniqueIndex:idx_chat_user" json:"chat_id"`
+	UserID        uint64    `gorm:"not null;index;uniqueIndex:idx_chat_user" json:"user_id"`
+	Role          ChatRole  `gorm:"type:varchar(10);default:'member';check:role IN ('member','admin')" json:"role"`
+	JoinedAt      time.Time `gorm:"autoCreateTime" json:"joined_at"`
+	LastMessageID *uint64   `gorm:"default:null" json:"last_read_message_id,omitempty"`
 
 	// Relations
 	Chat        *Chat      `gorm:"foreignKey:ChatID;constraint:OnDelete:CASCADE" json:"chat,omitempty"`
 	User        *user.User `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user,omitempty"`
-	LastMessage Message    `gorm:"foreignKey:LastReadMessageID"`
+	LastMessage Message    `gorm:"foreignKey:LastMessageID"`
 }
 
 type Message struct {
-	ID        uint64     `gorm:"primaryKey;autoIncrement" json:"id"`
-	ChatID    uint64     `gorm:"index" json:"chat_id"`
-	SenderID  *uint64    `gorm:"index" json:"sender_id,omitempty"`
-	Content   string     `gorm:"type:text" json:"content,omitempty"`
+	ID        uint64     `gorm:"primaryKey;autoIncrement" json:"id,omitempty"`
+	ChatID    uint64     `gorm:"index" json:"chatId"`
+	SenderID  *uint64    `gorm:"index" json:"senderId"`
+	Content   string     `gorm:"type:text" json:"content"`
 	ReplyTo   *uint64    `gorm:"index" json:"reply_to,omitempty"`
-	SentAt    time.Time  `gorm:"autoCreateTime" json:"sent_at"`
+	SentAt    time.Time  `gorm:"autoCreateTime" json:"sentAt"`
 	EditedAt  *time.Time `json:"edited_at,omitempty"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 
@@ -76,11 +76,9 @@ type Message struct {
 type MessageStatus struct {
 	ID        uint64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	MessageID uint64     `gorm:"not null;index;uniqueIndex:idx_message_user" json:"message_id"`
-	UserID    uint64     `gorm:"not null;index;uniqueIndex:idx_message_user" json:"user_id"`
 	Status    ChatStatus `gorm:"type:varchar(10);default:'sent';check:status IN ('sent','delivered','readed')" json:"status"`
 	UpdatedAt time.Time  `gorm:"autoUpdateTime" json:"updated_at"`
 
 	// Relations
-	Message *Message   `gorm:"foreignKey:MessageID;constraint:OnDelete:CASCADE" json:"message,omitempty"`
-	User    *user.User `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user,omitempty"`
+	Message *Message `gorm:"foreignKey:MessageID;constraint:OnDelete:CASCADE" json:"message,omitempty"`
 }

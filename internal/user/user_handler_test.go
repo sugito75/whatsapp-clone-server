@@ -38,10 +38,10 @@ func TestHandleCreateUser(t *testing.T) {
 		mockService := new(mocks.MockUserService)
 
 		dto := user.CreateUserDTO{
-			Username: "Alan",
-			Password: "secret123",
-			Phone:    "08123456789",
-			Bio:      "Hi there!",
+			DisplayName: "Alan",
+			Password:    "secret123",
+			Phone:       "08123456789",
+			Bio:         "Hi there!",
 		}
 		mockService.On("CreateUser", mock.AnythingOfType("user.CreateUserDTO")).Return(uint(1), nil)
 
@@ -78,9 +78,9 @@ func TestHandleCreateUser(t *testing.T) {
 		app := setupTestApp(mockService)
 
 		body, _ := json.Marshal(user.CreateUserDTO{
-			Username: "Alan",
-			Password: "secret123",
-			Phone:    "08123456789",
+			DisplayName: "Alan",
+			Password:    "secret123",
+			Phone:       "08123456789",
 		})
 		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")

@@ -8,7 +8,7 @@ func ChatModelToDTO(uid uint64, chats []ChatMember) []GetChatsDTO {
 		member := chat.Chat.Members[0].User
 
 		if chat.Chat.ChatType == ChatTypePrivate {
-			title = &member.Username
+			title = &member.DisplayName
 			icon = member.ProfilePicture
 		}
 

@@ -17,9 +17,9 @@ func TestRepoCreateUser(t *testing.T) {
 		repo := user.NewRepository(gormDB)
 
 		newUser := user.User{
-			Username:   "John Doe",
-			Phone:      "90121",
-			LastOnline: time.Now(),
+			DisplayName: "John Doe",
+			Phone:       "90121",
+			LastOnline:  time.Now(),
 		}
 
 		// Mock expected behavior
@@ -41,9 +41,9 @@ func TestRepoCreateUser(t *testing.T) {
 		repo := user.NewRepository(gormDB)
 
 		newUser := user.User{
-			Username:   "John Doe",
-			Phone:      "90121",
-			LastOnline: time.Now(),
+			DisplayName: "John Doe",
+			Phone:       "90121",
+			LastOnline:  time.Now(),
 		}
 
 		// Mock failure on insert
@@ -68,7 +68,7 @@ func TestRepoGetUserByPhone(t *testing.T) {
 
 		expectedUser := user.User{
 			ID:             1,
-			Username:       "johndoe",
+			DisplayName:    "johndoe",
 			Phone:          "08123456789",
 			Password:       "hashedpassword",
 			ProfilePicture: nil,
@@ -88,7 +88,7 @@ func TestRepoGetUserByPhone(t *testing.T) {
 			"last_online",
 		}).AddRow(
 			expectedUser.ID,
-			expectedUser.Username,
+			expectedUser.DisplayName,
 			expectedUser.Phone,
 			expectedUser.Password,
 			expectedUser.ProfilePicture,
@@ -105,7 +105,7 @@ func TestRepoGetUserByPhone(t *testing.T) {
 
 		assert.NotNil(t, u)
 		assert.Equal(t, expectedUser.ID, u.ID)
-		assert.Equal(t, expectedUser.Username, u.Username)
+		assert.Equal(t, expectedUser.DisplayName, u.DisplayName)
 		assert.Equal(t, expectedUser.Phone, u.Phone)
 		assert.Equal(t, expectedUser.Bio, u.Bio)
 		assert.NoError(t, mock.ExpectationsWereMet())

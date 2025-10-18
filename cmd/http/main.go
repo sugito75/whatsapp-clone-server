@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"github.com/sugito75/chat-app-server/config"
 	"github.com/sugito75/chat-app-server/internal/chat"
@@ -17,6 +18,8 @@ func main() {
 	logger.InitLogger()
 
 	app := fiber.New(config.NewFiberConfig())
+	app.Use(cors.New(cors.ConfigDefault))
+
 	app.Use(logger.LogRequestStart)
 
 	user.RegisterUserRoutes(app)

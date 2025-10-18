@@ -3,7 +3,8 @@ package chat
 import "time"
 
 type CreatePrivateChatDTO struct {
-	Phone string `json:"phone"`
+	Phone   string  `json:"phone"`
+	Message Message `json:"message"`
 }
 
 type CreateGroupChatDTO struct {
@@ -39,7 +40,7 @@ type SendMessageDTO struct {
 }
 
 type MessageDTO struct {
-	To      string  `json:"from"`
+	To      string  `json:"to"`
 	Message Message `json:"message"`
 }
 

@@ -26,10 +26,11 @@ type ChatService interface {
 }
 
 type ChatRepository interface {
-	CreateChat(c Chat) (uint64, error)
+	CreateChat(c Chat, m Message) (uint64, error)
 	GetChats(uid uint64) ([]ChatMember, error)
 	AddChatMember(m ChatMember) error
-	SaveMessage(m Message) error
+	SaveMessage(m *Message) error
 	EditMessage(id uint64, m Message) error
 	DeleteMessage(id uint64) error
+	SetMessageStatus(id uint64, status ChatStatus) error
 }

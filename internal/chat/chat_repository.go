@@ -14,9 +14,14 @@ func NewRepo(db *gorm.DB) ChatRepository {
 	}
 }
 
-func (r *chatRepository) CreateChat(c Chat) (uint64, error) {
+func (r *chatRepository) CreateChat(c Chat, m Message) (uint64, error) {
 	result := r.db.Create(&c)
 
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	result = r.db.Create(&m)
 	if result.Error != nil {
 		return 0, result.Error
 	}
@@ -34,7 +39,7 @@ func (r *chatRepository) GetChats(uid uint64) ([]ChatMember, error) {
 			return db.Where("user_id != $2", uid).Limit(1)
 		}).
 		Preload("Chat.Members.User").
-		Order("created_at DESC").
+		Order("joined_at DESC").
 		Find(&chats, "user_id = $1", uid)
 
 	if result.Error != nil {
@@ -50,7 +55,21 @@ func (r *chatRepository) AddChatMember(m ChatMember) error {
 	return result.Error
 }
 
-func (r *chatRepository) SaveMessage(m Message) error {
+func (r *chatRepository) SaveMessage(m *Message) error {
+	m.Status = &MessageStatus{
+		Status: StatusSent,
+	}
+
+	result := r.db.Create(m)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	result = r.db.Table("chat_members").Where("chat_id = $2", m.ChatID).Update("last_message_id", m.ID)
+	if result.Error != nil {
+		return result.Error
+	}
+
 	return nil
 }
 
@@ -59,5 +78,14 @@ func (r *chatRepository) EditMessage(id uint64, m Message) error {
 }
 
 func (r *chatRepository) DeleteMessage(id uint64) error {
+	return nil
+}
+
+func (r chatRepository) SetMessageStatus(id uint64, status ChatStatus) error {
+	result := r.db.Table("message_statuses").Where("message_id = $2", id).Update("status", status)
+	if result.Error != nil {
+		return result.Error
+	}
+
 	return nil
 }
