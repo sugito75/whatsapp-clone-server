@@ -7,30 +7,21 @@ type ChatHandler interface {
 	CreateGroupChat(ctx *fiber.Ctx) error
 	JoinGroupChat(ctx *fiber.Ctx) error
 	GetChats(ctx *fiber.Ctx) error
-	GetMessages(ctx *fiber.Ctx) error
-	SendMessage(ctx *fiber.Ctx) error
-	ReadMessage(ctx *fiber.Ctx) error
-	EditMessage(ctx *fiber.Ctx) error
-	DeleteMessage(ctx *fiber.Ctx) error
+	LeaveGroup(ctx *fiber.Ctx) error
 }
 
 type ChatService interface {
-	CreatePrivateChat(c CreatePrivateChatDTO) error
-	CreateGroupChat(c CreateGroupChatDTO) error
-	JoinGroupChat(g JoinGroupDTO) error
+	CreatePrivateChat(c CreatePrivateChatDTO) (uint64, error)
+	CreateGroupChat(c CreateGroupChatDTO) (uint64, error)
+	JoinGroupChat(userPhone string, chatId uint64) error
+	LeaveGroup(userPhone string, chatId uint64) error
 	GetChats(uid uint64) ([]GetChatsDTO, error)
-	SendMessage(m SendMessageDTO) error
-	ReadMessage(id uint) error
-	EditMessage(m EditMessageDTO) error
-	DeleteMessage(id uint) error
 }
 
 type ChatRepository interface {
-	CreateChat(c Chat, m Message) (uint64, error)
+	CreateChat(c Chat, phones []string) (uint64, error)
 	GetChats(uid uint64) ([]ChatMember, error)
+	GetChat(id uint64) *Chat
 	AddChatMember(m ChatMember) error
-	SaveMessage(m *Message) error
-	EditMessage(id uint64, m Message) error
-	DeleteMessage(id uint64) error
-	SetMessageStatus(id uint64, status ChatStatus) error
+	RemoveChatMember(userPhone string, chatId uint64) error
 }

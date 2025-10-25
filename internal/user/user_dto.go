@@ -21,3 +21,11 @@ type UserCredentialsDTO struct {
 	Bio            string  `json:"bio"`
 	SessionID      string  `json:"sessionId"`
 }
+
+type GetUserInfoDTO struct {
+	ID          uint    `json:"id"`
+	DisplayName string  `json:"displayName"`
+	Phone       string  `json:"phone"`
+	Bio         string  `json:"bio"`
+	Icon        *string `json:"icon"`
+}

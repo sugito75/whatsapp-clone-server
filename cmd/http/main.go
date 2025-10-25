@@ -19,6 +19,7 @@ func main() {
 
 	app := fiber.New(config.NewFiberConfig())
 	app.Use(cors.New(cors.ConfigDefault))
+	app.Static("/", "./public")
 
 	app.Use(logger.LogRequestStart)
 

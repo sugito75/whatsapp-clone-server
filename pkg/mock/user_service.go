@@ -27,3 +27,8 @@ func (m *MockUserService) CheckIsNumberRegistered(phone string) bool {
 
 	return args.Bool(0)
 }
+
+func (m *MockUserService) GetUserInfo(p string) (*user.GetUserInfoDTO, error) {
+	args := m.Called(p)
+	return args.Get(0).(*user.GetUserInfoDTO), args.Error(1)
+}

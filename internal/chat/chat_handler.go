@@ -1,9 +1,11 @@
 package chat
 
 import (
-	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/sugito75/chat-app-server/internal/user"
+	"github.com/sugito75/chat-app-server/pkg/validator"
 )
 
 type chatHandler struct {
@@ -17,42 +19,108 @@ func NewHandler(service ChatService) ChatHandler {
 }
 
 func (h *chatHandler) CreatePrivateChat(ctx *fiber.Ctx) error {
-	return nil
+	start := time.Now()
+	var body CreatePrivateChatDTO
+
+	if err := ctx.BodyParser(&body); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := validator.ValidateStruct(body); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "chat should contains minimum 2 members")
+	}
+
+	id, err := h.service.CreatePrivateChat(body)
+	if err != nil {
+		return err
+	}
+
+	ctx.Locals("duration", time.Since(start).Milliseconds())
+	ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "success",
+		"data":    fiber.Map{"id": id},
+	})
+
+	return ctx.Next()
 }
 
 func (h *chatHandler) CreateGroupChat(ctx *fiber.Ctx) error {
-	return nil
+	start := time.Now()
+	var body CreateGroupChatDTO
+
+	if err := ctx.BodyParser(&body); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := validator.ValidateStruct(body); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "group should contains minimum 2 members")
+	}
+
+	id, err := h.service.CreateGroupChat(body)
+	if err != nil {
+		return err
+	}
+
+	ctx.Locals("duration", time.Since(start).Milliseconds())
+	ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"message": "success",
+		"data":    fiber.Map{"id": id},
+	})
+
+	return ctx.Next()
+
 }
 
 func (h *chatHandler) JoinGroupChat(ctx *fiber.Ctx) error {
-	return nil
+	start := time.Now()
+	user, ok := ctx.Locals("user").(user.GetUserInfoDTO)
+	if !ok {
+		return fiber.NewError(fiber.StatusBadRequest, "no user id provided")
+	}
+
+	chatId, err := ctx.ParamsInt("id")
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := h.service.JoinGroupChat(user.Phone, uint64(chatId)); err != nil {
+		return err
+	}
+
+	ctx.Locals("duration", time.Since(start).Milliseconds())
+	ctx.Status(fiber.StatusOK).JSON(fiber.Map{"message": "success"})
+	return ctx.Next()
 }
 
 func (h *chatHandler) GetChats(ctx *fiber.Ctx) error {
-	id := ctx.Params("id")
-	uid, _ := strconv.Atoi(id)
-	chats, _ := h.service.GetChats(uint64(uid))
+	id, err := ctx.ParamsInt("id")
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	chats, _ := h.service.GetChats(uint64(id))
 
 	ctx.Status(200).JSON(chats)
 	return ctx.Next()
 }
 
-func (h *chatHandler) GetMessages(ctx *fiber.Ctx) error {
-	return nil
-}
+func (h *chatHandler) LeaveGroup(ctx *fiber.Ctx) error {
+	start := time.Now()
+	user, ok := ctx.Locals("user").(user.GetUserInfoDTO)
+	if !ok {
+		return fiber.NewError(fiber.StatusBadRequest, "no user id provided")
+	}
 
-func (h *chatHandler) SendMessage(ctx *fiber.Ctx) error {
-	return nil
-}
+	chatId, err := ctx.ParamsInt("id")
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
 
-func (h *chatHandler) ReadMessage(ctx *fiber.Ctx) error {
-	return nil
-}
+	if err := h.service.LeaveGroup(user.Phone, uint64(chatId)); err != nil {
+		return err
+	}
 
-func (h *chatHandler) EditMessage(ctx *fiber.Ctx) error {
-	return nil
-}
-
-func (h *chatHandler) DeleteMessage(ctx *fiber.Ctx) error {
-	return nil
+	ctx.Locals("duration", time.Since(start).Milliseconds())
+	ctx.Status(fiber.StatusOK).JSON(fiber.Map{"message": "success"})
+	return ctx.Next()
 }

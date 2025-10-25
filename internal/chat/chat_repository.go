@@ -14,14 +14,20 @@ func NewRepo(db *gorm.DB) ChatRepository {
 	}
 }
 
-func (r *chatRepository) CreateChat(c Chat, m Message) (uint64, error) {
+func (r *chatRepository) CreateChat(c Chat, phones []string) (uint64, error) {
 	result := r.db.Create(&c)
 
 	if result.Error != nil {
 		return 0, result.Error
 	}
 
-	result = r.db.Create(&m)
+	chatMembers := []ChatMember{}
+	for _, phone := range phones {
+		m := ChatMember{ChatID: c.ID, UserPhone: phone}
+		chatMembers = append(chatMembers, m)
+	}
+
+	result = r.db.CreateInBatches(chatMembers, len(phones))
 	if result.Error != nil {
 		return 0, result.Error
 	}
@@ -29,6 +35,7 @@ func (r *chatRepository) CreateChat(c Chat, m Message) (uint64, error) {
 	return c.ID, nil
 }
 
+// needs optimations
 func (r *chatRepository) GetChats(uid uint64) ([]ChatMember, error) {
 	var chats []ChatMember
 	result := r.db.
@@ -47,6 +54,24 @@ func (r *chatRepository) GetChats(uid uint64) ([]ChatMember, error) {
 	}
 
 	return chats, nil
+}
+
+func (r *chatRepository) GetChat(id uint64) *Chat {
+	var chat Chat
+	result := r.db.Find(&chat, "id  = $1", id)
+
+	if result.Error != nil {
+		return nil
+	}
+
+	return &chat
+}
+
+func (r *chatRepository) RemoveChatMember(userPhone string, chatId uint64) error {
+
+	result := r.db.Delete(ChatMember{UserPhone: userPhone, ChatID: chatId})
+
+	return result.Error
 }
 
 func (r *chatRepository) AddChatMember(m ChatMember) error {

@@ -60,8 +60,8 @@ func (m *Manager) HandleConn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Manager) setupHandlers() {
-	m.on[PrivateMessage] = m.handler.HandlePrivateMessage
-	m.on[GroupMessage] = m.handler.HandleGroupMessage
+	// m.on[PrivateMessage] = m.handler.HandlePrivateMessage
+	// m.on[GroupMessage] = m.handler.HandleGroupMessage
 }
 
 func (m *Manager) addClient(c *Client) {

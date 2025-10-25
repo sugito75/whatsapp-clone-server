@@ -13,5 +13,11 @@ func RegisterChatRoutes(app *fiber.App) {
 	service := NewService(repo)
 	handler := NewHandler(service)
 
-	chat.Get("/:id", handler.GetChats)
+	chat.Get("/", handler.GetChats)
+	chat.Post("/privates", handler.CreatePrivateChat)
+
+	chat.Post("/groups", handler.CreateGroupChat)
+	chat.Put("/groups/joins/:id", handler.JoinGroupChat)
+	chat.Delete("/groups/leaves/:id", handler.LeaveGroup)
+
 }

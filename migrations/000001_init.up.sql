@@ -23,7 +23,6 @@ CREATE TABLE chats (
     title VARCHAR(100),
     description TEXT,
     icon TEXT,
-    created_by BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -31,12 +30,12 @@ CREATE TABLE chats (
 CREATE TABLE chat_members (
     id BIGSERIAL PRIMARY KEY,
     chat_id BIGINT NOT NULL REFERENCES chats(id) ON DELETE CASCADE,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_phone CHAR(13) NOT NULL REFERENCES users(phone) ON DELETE CASCADE,
     role VARCHAR(10) DEFAULT 'member' CHECK(role IN ('member', 'admin')),
     last_message_id BIGINT DEFAULT NULL,
     joined_at TIMESTAMP DEFAULT NOW(),
 
-    UNIQUE(chat_id, user_id)
+    UNIQUE(chat_id, user_phone)
 
 );
 

@@ -82,3 +82,20 @@ func (s *userService) CheckIsNumberRegistered(phone string) bool {
 
 	return u != nil
 }
+
+func (s *userService) GetUserInfo(p string) (*GetUserInfoDTO, error) {
+	user := s.repo.GetUserByPhone(p)
+	if user == nil {
+		return nil, fiber.NewError(fiber.StatusBadRequest, "user not exists")
+	}
+
+	dto := GetUserInfoDTO{
+		ID:          user.ID,
+		Phone:       user.Phone,
+		DisplayName: user.DisplayName,
+		Bio:         user.Bio,
+		Icon:        user.ProfilePicture,
+	}
+
+	return &dto, nil
+}

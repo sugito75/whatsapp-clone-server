@@ -3,13 +3,12 @@ package chat
 import "time"
 
 type CreatePrivateChatDTO struct {
-	Phone   string  `json:"phone"`
-	Message Message `json:"message"`
+	Members []string `json:"members" validate:"required,min=2"`
 }
 
 type CreateGroupChatDTO struct {
 	Title       string   `form:"title" validate:"required,max=100"`
-	Members     []string `form:"members" validate:"required,min=1"`
+	Members     []string `form:"members" validate:"required,min=2"`
 	Icon        *string  `form:"icon,omitempty"`
 	Description *string  `form:"description,omitempty"`
 }

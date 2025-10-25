@@ -18,5 +18,6 @@ func RegisterUserRoutes(app *fiber.App) {
 
 	users.Post("/new", handler.CreateUser)
 	users.Post("/login", handler.GetUserCredentials)
+	users.Get("/info/:phone", handler.GetUserInfo)
 	users.Get("/check/:phone", handler.CheckIsNumberRegistered)
 }

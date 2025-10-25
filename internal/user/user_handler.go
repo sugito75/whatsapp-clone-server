@@ -97,6 +97,27 @@ func (h *userHandler) CheckIsNumberRegistered(ctx *fiber.Ctx) error {
 	return ctx.Next()
 }
 
+func (h *userHandler) GetUserInfo(ctx *fiber.Ctx) error {
+	start := time.Now()
+	phone := ctx.Params("phone")
+	if phone == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "phone number is required!")
+	}
+
+	u, err := h.service.GetUserInfo(phone)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	ctx.Locals("duration", time.Since(start).Milliseconds())
+	ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "success",
+		"data":    u,
+	})
+
+	return ctx.Next()
+}
+
 func isNoKeyError(err error) bool {
 	return err.Error() == "there is no uploaded file associated with the given key"
 }
