@@ -61,14 +61,14 @@ func (s *chatService) JoinGroupChat(userPhone string, groupId uint64) error {
 
 }
 
-func (s *chatService) GetChats(uid uint64) ([]GetChatsDTO, error) {
+func (s *chatService) GetChats(phone string) ([]GetChatsDTO, error) {
 
-	result, err := s.repo.GetChats(uid)
+	result, err := s.repo.GetChats(phone)
 	if err != nil {
 		return nil, err
 	}
 
-	chats := ChatModelToDTO(uid, result)
+	chats := ChatModelToDTO(result)
 
 	return chats, nil
 }

@@ -7,7 +7,6 @@ import (
 
 func NewFiberConfig() fiber.Config {
 	return fiber.Config{
-
 		DisableStartupMessage: true,
 		ErrorHandler:          middleware.ErrorHandler,
 	}

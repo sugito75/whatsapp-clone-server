@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/sugito75/chat-app-server/internal/user"
+	"github.com/sugito75/chat-app-server/pkg/jwt"
 	"github.com/sugito75/chat-app-server/pkg/validator"
 )
 
@@ -93,14 +94,14 @@ func (h *chatHandler) JoinGroupChat(ctx *fiber.Ctx) error {
 }
 
 func (h *chatHandler) GetChats(ctx *fiber.Ctx) error {
-	id, err := ctx.ParamsInt("id")
-	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	user, ok := ctx.Locals("user").(*jwt.UserData)
+	if !ok {
+		return jwt.ErrClaimFormat
 	}
 
-	chats, _ := h.service.GetChats(uint64(id))
+	chats, _ := h.service.GetChats(user.Phone)
 
-	ctx.Status(200).JSON(chats)
+	ctx.Status(fiber.StatusOK).JSON(chats)
 	return ctx.Next()
 }
 

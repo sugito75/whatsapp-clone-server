@@ -36,18 +36,18 @@ func (r *chatRepository) CreateChat(c Chat, phones []string) (uint64, error) {
 }
 
 // needs optimations
-func (r *chatRepository) GetChats(uid uint64) ([]ChatMember, error) {
+func (r *chatRepository) GetChats(phone string) ([]ChatMember, error) {
 	var chats []ChatMember
 	result := r.db.
 		Preload("LastMessage").
 		Preload("LastMessage.Status").
 		Preload("Chat").
 		Preload("Chat.Members", func(db *gorm.DB) *gorm.DB {
-			return db.Where("user_id != $2", uid).Limit(1)
+			return db.Where("user_phone != $2", phone).Limit(1)
 		}).
 		Preload("Chat.Members.User").
 		Order("joined_at DESC").
-		Find(&chats, "user_id = $1", uid)
+		Find(&chats, "user_phone = $1", phone)
 
 	if result.Error != nil {
 		return nil, result.Error

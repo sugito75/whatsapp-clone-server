@@ -15,12 +15,12 @@ type ChatService interface {
 	CreateGroupChat(c CreateGroupChatDTO) (uint64, error)
 	JoinGroupChat(userPhone string, chatId uint64) error
 	LeaveGroup(userPhone string, chatId uint64) error
-	GetChats(uid uint64) ([]GetChatsDTO, error)
+	GetChats(phone string) ([]GetChatsDTO, error)
 }
 
 type ChatRepository interface {
 	CreateChat(c Chat, phones []string) (uint64, error)
-	GetChats(uid uint64) ([]ChatMember, error)
+	GetChats(phone string) ([]ChatMember, error)
 	GetChat(id uint64) *Chat
 	AddChatMember(m ChatMember) error
 	RemoveChatMember(userPhone string, chatId uint64) error

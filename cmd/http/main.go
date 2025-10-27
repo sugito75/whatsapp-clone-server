@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"github.com/sugito75/chat-app-server/config"
+	"github.com/sugito75/chat-app-server/internal/auth"
 	"github.com/sugito75/chat-app-server/internal/chat"
 	"github.com/sugito75/chat-app-server/internal/user"
 	"github.com/sugito75/chat-app-server/pkg/logger"
@@ -22,9 +23,11 @@ func main() {
 	app.Static("/", "./public")
 
 	app.Use(logger.LogRequestStart)
+	api := app.Group("/api")
 
-	user.RegisterUserRoutes(app)
-	chat.RegisterChatRoutes(app)
+	auth.RegisterAuthRoutes(api)
+	user.RegisterUserRoutes(api)
+	chat.RegisterChatRoutes(api)
 
 	app.Use(logger.LogRequestEnd)
 	slog.Info("Server is online", "port", os.Getenv("HTTP_PORT"))

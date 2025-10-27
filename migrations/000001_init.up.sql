@@ -77,3 +77,11 @@ CREATE TABLE call_histories (
 
     UNIQUE(caller, called)
 );
+
+CREATE TABLE auth_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES  users(id) ON DELETE CASCADE,
+    token TEXT NOT NULL,
+
+    UNIQUE(user_id, token)
+)

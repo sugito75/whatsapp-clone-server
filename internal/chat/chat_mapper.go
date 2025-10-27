@@ -1,6 +1,6 @@
 package chat
 
-func ChatModelToDTO(uid uint64, chats []ChatMember) []GetChatsDTO {
+func ChatModelToDTO(chats []ChatMember) []GetChatsDTO {
 	result := []GetChatsDTO{}
 	for _, chat := range chats {
 		title := chat.Chat.Title
