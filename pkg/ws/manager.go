@@ -7,8 +7,6 @@ import (
 
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gorilla/websocket"
-	"github.com/sugito75/chat-app-server/config"
-	"github.com/sugito75/chat-app-server/internal/chat"
 )
 
 var (
@@ -30,7 +28,7 @@ func NewManager() *Manager {
 	m := &Manager{
 		clients: make(ClientList),
 		on:      make(map[EventType]EventHandler),
-		handler: *NewMessageHandler(chat.NewRepo(config.GetConn())),
+		// handler: ,
 	}
 
 	m.setupHandlers()

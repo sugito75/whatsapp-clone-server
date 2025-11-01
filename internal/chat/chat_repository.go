@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"github.com/sugito75/chat-app-server/internal/message"
 	"gorm.io/gorm"
 )
 
@@ -39,11 +40,9 @@ func (r *chatRepository) CreateChat(c Chat, phones []string) (uint64, error) {
 func (r *chatRepository) GetChats(phone string) ([]ChatMember, error) {
 	var chats []ChatMember
 	result := r.db.
-		Preload("LastMessage").
 		Preload("LastMessage.Status").
-		Preload("Chat").
 		Preload("Chat.Members", func(db *gorm.DB) *gorm.DB {
-			return db.Where("user_phone != $2", phone).Limit(1)
+			return db.Where("user_phone != $2", phone).Limit(2)
 		}).
 		Preload("Chat.Members.User").
 		Order("joined_at DESC").
@@ -80,9 +79,9 @@ func (r *chatRepository) AddChatMember(m ChatMember) error {
 	return result.Error
 }
 
-func (r *chatRepository) SaveMessage(m *Message) error {
-	m.Status = &MessageStatus{
-		Status: StatusSent,
+func (r *chatRepository) SaveMessage(m *message.Message) error {
+	m.Status = &message.MessageStatus{
+		Status: message.StatusSent,
 	}
 
 	result := r.db.Create(m)
@@ -98,7 +97,7 @@ func (r *chatRepository) SaveMessage(m *Message) error {
 	return nil
 }
 
-func (r *chatRepository) EditMessage(id uint64, m Message) error {
+func (r *chatRepository) EditMessage(id uint64, m message.Message) error {
 	return nil
 }
 
@@ -106,7 +105,7 @@ func (r *chatRepository) DeleteMessage(id uint64) error {
 	return nil
 }
 
-func (r chatRepository) SetMessageStatus(id uint64, status ChatStatus) error {
+func (r chatRepository) SetMessageStatus(id uint64, status message.ChatStatus) error {
 	result := r.db.Table("message_statuses").Where("message_id = $2", id).Update("status", status)
 	if result.Error != nil {
 		return result.Error

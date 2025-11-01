@@ -15,4 +15,7 @@ type Event struct {
 const (
 	PrivateMessage EventType = "private_message"
 	GroupMessage   EventType = "group_message"
+	NewMessage     EventType = "new_message"
+	Typing         EventType = "typing"
+	NewStatus      EventType = "new_status"
 )

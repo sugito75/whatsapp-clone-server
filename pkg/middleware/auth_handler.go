@@ -15,7 +15,7 @@ func Auth(ctx *fiber.Ctx) error {
 
 	user, err := tokenService.Verify(tokenString, true)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
 
 	ctx.Locals("user", user)

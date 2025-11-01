@@ -3,6 +3,10 @@ package chat
 func ChatModelToDTO(chats []ChatMember) []GetChatsDTO {
 	result := []GetChatsDTO{}
 	for _, chat := range chats {
+		if chat.LastMessage.ID == 0 {
+			continue
+		}
+
 		title := chat.Chat.Title
 		icon := chat.Chat.Icon
 		member := chat.Chat.Members[0].User

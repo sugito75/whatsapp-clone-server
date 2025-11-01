@@ -3,10 +3,12 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func GetConn() *gorm.DB {
@@ -16,9 +18,17 @@ func GetConn() *gorm.DB {
 		os.Exit(1)
 	}
 
+	dbLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			LogLevel: logger.Info,
+			Colorful: true,
+		},
+	)
+
 	gormDB, err := gorm.Open(postgres.New(postgres.Config{
 		Conn: conn,
-	}), &gorm.Config{})
+	}), &gorm.Config{Logger: dbLogger})
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)

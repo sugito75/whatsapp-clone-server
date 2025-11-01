@@ -1,14 +1,5 @@
 package message
 
-import "github.com/sugito75/chat-app-server/pkg/ws"
-
-type MessageHandler interface {
-	SendPrivateMessage(evt ws.Event) error
-	SendGroupMessage(evt ws.Event) error
-	EditMessage(evt ws.Event) error
-	DeleteMessage(evt ws.Event) error
-}
-
 type MessageService interface {
 	SendPrivateMessage() error
 	SendGroupMessage() error
@@ -17,7 +8,7 @@ type MessageService interface {
 }
 
 type MessageRepository interface {
-	SaveMessage() error
-	EditMessage() error
-	DeleteMessage() error
+	SaveMessage(m Message) error
+	EditMessage(m Message) error
+	DeleteMessage(id uint64) error
 }

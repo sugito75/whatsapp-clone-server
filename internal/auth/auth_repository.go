@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -15,9 +17,16 @@ func NewRepo(db *gorm.DB) AuthRepository {
 }
 
 func (r *authRepository) SaveToken(userId uint64, token string) error {
-	t := AuthToken{UserID: userId, Token: token}
+	var t AuthToken
+	result := r.db.First(&t, "user_id = $1 AND token = $2", userId, token)
 
-	result := r.db.Create(&t)
+	if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil
+	}
+
+	t = AuthToken{UserID: userId, Token: token}
+
+	result = r.db.Create(&t)
 	return result.Error
 }
 

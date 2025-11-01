@@ -8,11 +8,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var (
-	accessTokenTTL  = time.Now().Add(time.Minute * 15)    //15 minutes
-	refreshTokenTTL = time.Now().Add(time.Hour * 24 * 30) //1 month
-)
-
 type JwtService struct {
 	accessTokenSecret  []byte
 	refreshTokenSecret []byte
@@ -86,6 +81,9 @@ func (s *JwtService) getSecret(isAccessToken bool) []byte {
 }
 
 func (s *JwtService) getExpirationTime(isAccessToken bool) *jwt.NumericDate {
+	accessTokenTTL := time.Now().Add(time.Minute * 15)     //15 minutes
+	refreshTokenTTL := time.Now().Add(time.Hour * 24 * 30) //1 month
+
 	if isAccessToken {
 		return jwt.NewNumericDate(accessTokenTTL)
 	}

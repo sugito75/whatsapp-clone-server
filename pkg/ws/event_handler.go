@@ -1,16 +1,16 @@
 package ws
 
 import (
-	"github.com/sugito75/chat-app-server/internal/chat"
+	"github.com/sugito75/chat-app-server/internal/message"
 )
 
 type MessageHandler struct {
-	chatRepo chat.ChatRepository
+	messageRepo message.MessageRepository
 }
 
-func NewMessageHandler(repo chat.ChatRepository) *MessageHandler {
+func NewMessageHandler(repo message.MessageRepository) *MessageHandler {
 	return &MessageHandler{
-		chatRepo: repo,
+		messageRepo: repo,
 	}
 }
 
